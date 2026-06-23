@@ -1,48 +1,48 @@
 package com.padna.yolosight.gui;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.geometry.Orientation;
 
 /**
- * Bottom status bar showing current status, image dimensions, and model info.
+ * Bottom status bar — left status message, right image/model info.
  */
-public class StatusBar extends JPanel {
+public class StatusBar {
 
-    private final JLabel statusLabel;
-    private final JLabel imageInfoLabel;
-    private final JLabel modelLabel;
+    private final HBox bar;
+    private final Label leftLabel;
+    private final Label rightLabel;
 
     public StatusBar() {
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY),
-                new EmptyBorder(2, 8, 2, 8)));
+        bar = new HBox();
+        bar.getStyleClass().add("status-bar");
+        bar.setPrefHeight(32);
 
-        statusLabel = new JLabel("就绪");
-        imageInfoLabel = new JLabel();
-        modelLabel = new JLabel("模型: yolov8n");
+        leftLabel = new Label("就绪");
+        rightLabel = new Label("YOLOv8n  ·  ONNX Runtime");
 
-        add(statusLabel, BorderLayout.WEST);
+        // Spacer between left and right
+        Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 0));
-        rightPanel.add(imageInfoLabel);
-        rightPanel.add(modelLabel);
-        add(rightPanel, BorderLayout.EAST);
+        Separator sep = new Separator(Orientation.VERTICAL);
+        sep.setStyle("-fx-padding: 0 8;");
+
+        bar.getChildren().addAll(leftLabel, spacer, rightLabel);
     }
 
-    /** Set the main status text (left side). */
-    public void setStatus(String text) {
-        statusLabel.setText(text);
+    public void setLeft(Label label) {
+        bar.getChildren().set(0, label);
     }
 
-    /** Set image info text (right side), e.g. "1920×1080 | 2.3 MB". */
-    public void setImageInfo(String text) {
-        imageInfoLabel.setText(text);
+    public void setRight(String text) {
+        rightLabel.setText(text);
     }
 
-    /** Clear image info. */
-    public void clearImageInfo() {
-        imageInfoLabel.setText("");
+    public Pane getView() {
+        return bar;
     }
 }

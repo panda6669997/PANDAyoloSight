@@ -1,173 +1,151 @@
 package com.padna.yolosight.gui;
 
-import com.padna.yolosight.config.AppConfig;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.util.List;
 
 /**
- * Side panel with detection controls: confidence threshold slider,
- * class filter combo, Detect button, and a summary label.
+ * Left sidebar with card-style controls.
  */
-public class ControlPanel extends JPanel {
+public class ControlPanel {
 
-    private final JSlider confidenceSlider;
-    private final JLabel confidenceValueLabel;
-    private final JComboBox<String> classFilterCombo;
-    private final JButton detectButton;
-    private final JLabel summaryLabel;
+    private final ScrollPane scrollView;
+    private final VBox content;
+    private final Button detectButton;
+    private final Slider confidenceSlider;
+    private final Label confidenceValueLabel;
+    private final ComboBox<String> classFilterCombo;
+    private final Label summaryCountLabel;
+    private final Label summarySubLabel;
 
-    // Callback interfaces (set by MainFrame)
     private Runnable onDetectAction;
     private java.util.function.Consumer<Float> onConfidenceChanged;
     private java.util.function.Consumer<String> onClassFilterChanged;
 
     public ControlPanel() {
-        setPreferredSize(new Dimension(AppConfig.CONTROL_PANEL_WIDTH, 0));
-        setMinimumSize(new Dimension(200, 0));
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBorder(new EmptyBorder(8, 8, 8, 8));
+        content = new VBox(12);
+        content.setPadding(new Insets(12, 10, 12, 10));
+        content.setStyle("-fx-background-color: #1e1e22;");
 
         // ── Detect button ────────────────────────────────────────────
-        detectButton = new JButton("🔍 检测物体");
-        detectButton.setFont(detectButton.getFont().deriveFont(Font.BOLD, 14f));
-        detectButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        detectButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-        detectButton.addActionListener(e -> {
+        detectButton = new Button("检测物体");
+        detectButton.getStyleClass().add("accent-button");
+        detectButton.setMaxWidth(Double.MAX_VALUE);
+        detectButton.setPrefHeight(44);
+        detectButton.setOnAction(e -> {
             if (onDetectAction != null) onDetectAction.run();
         });
-        add(detectButton);
-        add(Box.createVerticalStrut(16));
+        content.getChildren().add(detectButton);
 
-        // ── Confidence threshold slider ──────────────────────────────
-        JPanel confPanel = createSectionPanel("置信度阈值");
-        confPanel.setLayout(new BoxLayout(confPanel, BoxLayout.Y_AXIS));
+        // ── Confidence card ──────────────────────────────────────────
+        VBox confCard = createCard("置信度阈值");
+        confidenceValueLabel = new Label("50%");
+        confidenceValueLabel.setFont(Font.font("SansSerif", FontWeight.BOLD, 26));
+        confidenceValueLabel.setAlignment(Pos.CENTER);
+        confidenceValueLabel.setMaxWidth(Double.MAX_VALUE);
 
-        confidenceValueLabel = new JLabel("50%");
-        confidenceValueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        confidenceValueLabel.setFont(confidenceValueLabel.getFont().deriveFont(Font.BOLD, 16f));
-
-        confidenceSlider = new JSlider(JSlider.HORIZONTAL, 10, 100, 50);
-        confidenceSlider.setMajorTickSpacing(20);
-        confidenceSlider.setMinorTickSpacing(5);
-        confidenceSlider.setPaintTicks(true);
+        confidenceSlider = new Slider(10, 100, 50);
+        confidenceSlider.setMajorTickUnit(10);
+        confidenceSlider.setMinorTickCount(4);
+        confidenceSlider.setShowTickMarks(true);
         confidenceSlider.setSnapToTicks(true);
-        confidenceSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
-        confidenceSlider.addChangeListener(e -> {
-            int val = confidenceSlider.getValue();
-            confidenceValueLabel.setText(val + "%");
-            if (onConfidenceChanged != null) {
-                onConfidenceChanged.accept(val / 100f);
+        confidenceSlider.valueProperty().addListener((obs, old, val) -> {
+            int v = val.intValue();
+            confidenceValueLabel.setText(v + "%");
+            if (!confidenceSlider.isValueChanging() && onConfidenceChanged != null) {
+                onConfidenceChanged.accept(v / 100f);
+            }
+        });
+        // Fire on release
+        confidenceSlider.valueChangingProperty().addListener((obs, wasChanging, isChanging) -> {
+            if (!isChanging && onConfidenceChanged != null) {
+                onConfidenceChanged.accept((float) confidenceSlider.getValue() / 100f);
             }
         });
 
-        confPanel.add(confidenceValueLabel);
-        confPanel.add(Box.createVerticalStrut(4));
-        confPanel.add(confidenceSlider);
-        add(confPanel);
-        add(Box.createVerticalStrut(12));
+        confCard.getChildren().addAll(confidenceValueLabel, confidenceSlider);
+        content.getChildren().add(confCard);
 
-        // ── Class filter ─────────────────────────────────────────────
-        JPanel filterPanel = createSectionPanel("类别筛选");
-        filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
-
-        classFilterCombo = new JComboBox<>(new String[]{"全部类别"});
-        classFilterCombo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        classFilterCombo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        classFilterCombo.addActionListener(e -> {
+        // ── Filter card ──────────────────────────────────────────────
+        VBox filterCard = createCard("类别筛选");
+        classFilterCombo = new ComboBox<>();
+        classFilterCombo.getItems().add("全部类别");
+        classFilterCombo.getSelectionModel().selectFirst();
+        classFilterCombo.setMaxWidth(Double.MAX_VALUE);
+        classFilterCombo.setOnAction(e -> {
             if (onClassFilterChanged != null) {
-                onClassFilterChanged.accept((String) classFilterCombo.getSelectedItem());
+                onClassFilterChanged.accept(classFilterCombo.getValue());
             }
         });
-        filterPanel.add(classFilterCombo);
-        add(filterPanel);
-        add(Box.createVerticalStrut(12));
+        filterCard.getChildren().add(classFilterCombo);
+        content.getChildren().add(filterCard);
 
-        // ── Summary ──────────────────────────────────────────────────
-        JPanel summaryPanel = createSectionPanel("检测结果");
-        summaryPanel.setLayout(new BorderLayout());
-        summaryLabel = new JLabel("<html>暂无检测结果。</html>");
-        summaryPanel.add(summaryLabel, BorderLayout.CENTER);
-        add(summaryPanel);
+        // ── Results card ─────────────────────────────────────────────
+        VBox resultsCard = createCard("检测结果");
+        summaryCountLabel = new Label();
+        summaryCountLabel.getStyleClass().add("summary-count");
+        summarySubLabel = new Label("暂无检测结果");
+        summarySubLabel.getStyleClass().add("summary-sub");
+        resultsCard.getChildren().addAll(summaryCountLabel, summarySubLabel);
+        content.getChildren().add(resultsCard);
 
-        // Push everything to the top
-        add(Box.createVerticalGlue());
+        // Scroll wrapper
+        scrollView = new ScrollPane(content);
+        scrollView.setFitToWidth(true);
+        scrollView.setMinWidth(220);
+        scrollView.setPrefWidth(260);
+        scrollView.setStyle("-fx-background-color: #1e1e22;");
+        scrollView.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
     }
 
-    // ── Section helper ──────────────────────────────────────────────────
+    private VBox createCard(String title) {
+        VBox card = new VBox(10);
+        card.getStyleClass().add("control-card");
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("card-title");
+        card.getChildren().add(0, titleLabel);
+        return card;
+    }
 
-    private JPanel createSectionPanel(String title) {
-        JPanel panel = new JPanel();
-        panel.setBorder(new TitledBorder(title));
-        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
-        return panel;
+    public ScrollPane getView() {
+        return scrollView;
     }
 
     // ── Getters & setters ───────────────────────────────────────────────
 
     public float getConfidenceThreshold() {
-        return confidenceSlider.getValue() / 100f;
+        return (float) confidenceSlider.getValue() / 100f;
     }
 
-    public void setConfidenceThreshold(float threshold) {
-        confidenceSlider.setValue(Math.round(threshold * 100));
-    }
-
-    /** Populate the class-filter dropdown with unique class names from results. */
-    public void updateClassFilter(java.util.List<String> classNames) {
-        String current = (String) classFilterCombo.getSelectedItem();
-        classFilterCombo.removeAllItems();
-        classFilterCombo.addItem("全部类别");
-        for (String name : classNames) {
-            classFilterCombo.addItem(name);
-        }
-        // Restore selection if possible
-        if (current != null) {
-            for (int i = 0; i < classFilterCombo.getItemCount(); i++) {
-                if (current.equals(classFilterCombo.getItemAt(i))) {
-                    classFilterCombo.setSelectedIndex(i);
-                    return;
-                }
-            }
+    public void updateClassFilter(List<String> classNames) {
+        String current = classFilterCombo.getValue();
+        classFilterCombo.getItems().clear();
+        classFilterCombo.getItems().add("全部类别");
+        classFilterCombo.getItems().addAll(classNames);
+        if (current != null && classFilterCombo.getItems().contains(current)) {
+            classFilterCombo.setValue(current);
+        } else {
+            classFilterCombo.getSelectionModel().selectFirst();
         }
     }
 
     public void setSummary(int totalDetected, long elapsedMs) {
         if (totalDetected == 0) {
-            summaryLabel.setText("<html>未检测到物体<br/>"
-                    + "<small>尝试降低置信度阈值</small></html>");
+            summaryCountLabel.setText("—");
+            summarySubLabel.setText("未检测到物体\n尝试降低置信度阈值");
         } else {
-            summaryLabel.setText(String.format(
-                    "<html><b>%d</b> 个物体<br/>"
-                            + "<small>耗时 %,d 毫秒</small></html>",
-                    totalDetected,
-                    elapsedMs));
+            summaryCountLabel.setText(String.valueOf(totalDetected));
+            summarySubLabel.setText(String.format("个物体  ·  %,d 毫秒", elapsedMs));
         }
     }
 
-    public void clearSummary() {
-        summaryLabel.setText("<html>暂无检测结果。</html>");
-    }
-
-    // ── Callbacks ───────────────────────────────────────────────────────
-
-    public void setOnDetectAction(Runnable action) {
-        this.onDetectAction = action;
-    }
-
-    public void setOnConfidenceChanged(java.util.function.Consumer<Float> callback) {
-        this.onConfidenceChanged = callback;
-    }
-
-    public void setOnClassFilterChanged(java.util.function.Consumer<String> callback) {
-        this.onClassFilterChanged = callback;
-    }
-
-    // Expose detect button enable/disable for MainFrame
-    public void setDetectEnabled(boolean enabled) {
-        detectButton.setEnabled(enabled);
-    }
+    public void setOnDetectAction(Runnable action) { this.onDetectAction = action; }
+    public void setOnConfidenceChanged(java.util.function.Consumer<Float> cb) { this.onConfidenceChanged = cb; }
+    public void setOnClassFilterChanged(java.util.function.Consumer<String> cb) { this.onClassFilterChanged = cb; }
+    public void setDetectEnabled(boolean enabled) { detectButton.setDisable(!enabled); }
 }

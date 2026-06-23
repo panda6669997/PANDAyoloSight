@@ -1,4 +1,4 @@
-# PADNAyoloSight
+# PANDAyoloSight
 
 Desktop application for object detection in images, powered by **YOLOv8**.
 

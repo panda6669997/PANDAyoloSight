@@ -9,7 +9,7 @@
     <artifactId>yolo-sight</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>PADNAyoloSight</name>
+    <name>PANDAyoloSight</name>
     <description>Desktop application for object detection using YOLOv8</description>
 
     <properties>
@@ -17,6 +17,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <djl.version>0.36.0</djl.version>
+        <javafx.version>21.0.2</javafx.version>
         <main.class>com.padna.yolosight.App</main.class>
     </properties>
 
@@ -33,42 +34,45 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- DJL Core API -->
+        <!-- DJL Core -->
         <dependency>
             <groupId>ai.djl</groupId>
             <artifactId>api</artifactId>
         </dependency>
-
-        <!-- DJL Model Zoo -->
         <dependency>
             <groupId>ai.djl</groupId>
             <artifactId>model-zoo</artifactId>
         </dependency>
-
-        <!-- DJL Basic Dataset (for image handling) -->
         <dependency>
             <groupId>ai.djl</groupId>
             <artifactId>basicdataset</artifactId>
         </dependency>
-
-        <!-- PyTorch Model Zoo (contains YOLOv8 model definitions) -->
         <dependency>
             <groupId>ai.djl.pytorch</groupId>
             <artifactId>pytorch-model-zoo</artifactId>
         </dependency>
-
-        <!-- ONNX Runtime Engine (lightweight inference) -->
         <dependency>
             <groupId>ai.djl.onnxruntime</groupId>
             <artifactId>onnxruntime-engine</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- FlatLaf: modern Swing look-and-feel -->
+        <!-- JavaFX -->
         <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf</artifactId>
-            <version>3.5.4</version>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+            <classifier>win</classifier>
         </dependency>
 
         <!-- Testing -->
@@ -82,7 +86,6 @@
 
     <build>
         <plugins>
-            <!-- Compiler plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -92,7 +95,20 @@
                 </configuration>
             </plugin>
 
-            <!-- Shade plugin: create fat JAR -->
+            <!-- JavaFX maven plugin for running -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>${main.class}</mainClass>
+                    <options>
+                        <option>-Donnxruntime.native.path=${user.home}/.yolosight/native</option>
+                    </options>
+                </configuration>
+            </plugin>
+
+            <!-- Shade: fat JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -126,7 +142,6 @@
                 </executions>
             </plugin>
 
-            <!-- Surefire for tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

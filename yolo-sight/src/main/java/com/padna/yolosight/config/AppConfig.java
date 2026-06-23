@@ -13,7 +13,7 @@ public final class AppConfig {
     }
 
     // ── Application metadata ───────────────────────────────────────────
-    public static final String APP_NAME = "PADNAyoloSight";
+    public static final String APP_NAME = "PANDAyoloSight";
     public static final String APP_VERSION = "1.0.0";
 
     // ── Model settings ──────────────────────────────────────────────────

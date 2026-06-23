@@ -7,27 +7,27 @@
 ```bash
 mvn clean compile               # 仅编译
 mvn test                        # 运行全部测试（首次需联网下载模型）
-mvn package                     # 生成 fat JAR 到 target/yolo-sight-1.0.0.jar
-java -jar target/yolo-sight-1.0.0.jar
+mvn package                     # 生成 fat JAR
+MAVEN_OPTS="-Donnxruntime.native.path=~/.yolosight/native" mvn javafx:run   # 启动
 
 # 运行单个测试类
 mvn test -Dtest=YoloDetectorTest
 ```
 
-需要 **JDK 17+** 和 **Maven 3.8+**。fat JAR 由 `maven-shade-plugin` 配合 `ServicesResourceTransformer` 生成（确保 ONNX Runtime 原生 SPI 服务在合并后不丢失）。
+需要 **JDK 17+** 和 **Maven 3.8+**。使用 `javafx-maven-plugin` 启动（自动处理 JavaFX 模块路径），`maven-shade-plugin` + `ServicesResourceTransformer` 生成 fat JAR。
 
 ## 架构
 
-这是一个 **Java Swing 桌面应用**，使用 **DJL (Deep Java Library)** 通过 ONNX Runtime 对用户选择的图片运行 YOLOv8 目标检测。
+这是一个 **JavaFX 桌面应用**，使用 **DJL (Deep Java Library)** 通过 ONNX Runtime 对用户选择的图片运行 YOLOv8 目标检测。
 
 ### 线程模型
 
-**所有 I/O 和推理必须在 `SwingWorker` 后台线程上运行** — 绝不能占用 EDT。该模式在 `MainFrame` 中用于三处：
+**所有 I/O 和推理必须在 `javafx.concurrent.Task` 后台线程上运行** — 绝不能占用 JavaFX Application Thread。该模式在 `MainWindow` 中用于三处：
 - `loadImageFile()` — 后台从磁盘读取图片
 - `onDetect()` — 后台下载模型（首次启动）+ 推理
 - `onSaveResult()` — 后台渲染标注图片 + 写入磁盘
 
-`SwingWorker.done()` 始终在 EDT 上运行，因此结果在这里交还给 GUI 组件（`imageCanvas.setDetections()`、`resultTablePanel.setResults()` 等）。
+`Task.setOnSucceeded()` 始终在 JavaFX Application Thread 上运行，因此结果在这里交还给 GUI 组件。
 
 ### 推理管道
 
@@ -57,17 +57,21 @@ DJL 的 `Criteria`（`ModelManager.java:34-42`）通过 `optApplication(OBJECT_D
 ### GUI 组件树
 
 ```
-MainFrame (JFrame, BorderLayout)
-├── NORTH: JToolBar [打开 | 检测 | 保存结果 | 适应窗口]
-├── CENTER: JSplitPane (水平分割)
-│   ├── LEFT: ControlPanel（固定约 260px）
-│   └── RIGHT: JSplitPane (垂直分割)
-│       ├── TOP: JScrollPane → ImageCanvas
-│       └── BOTTOM: ResultTablePanel
-└── SOUTH: StatusBar
+Stage → Scene → BorderPane (root)
+├── TOP: VBox
+│   ├── MenuBar [文件 | 视图 | 帮助]
+│   └── ToolBar [打开图片 | 开始检测 | 保存结果 | 适应窗口]
+├── CENTER: SplitPane (水平)
+│   ├── LEFT: ControlPanel（~260px，ScrollPane包裹）
+│   └── RIGHT: SplitPane (垂直)
+│       ├── TOP: ScrollPane → Canvas (ImageCanvasView)
+│       └── BOTTOM: TableView (ResultTablePanel)
+└── BOTTOM: StatusBar (HBox)
+
+主题: 自定义 dark-theme.css
 ```
 
-`MainFrame` 拥有所有组件的连接关系 — `ControlPanel` 和 `ResultTablePanel` 通过 `MainFrame` 设置的回调（`Runnable`、`Consumer<T>`）进行通信，而不是直接相互引用。
+`MainWindow` 拥有所有连接关系 — `ControlPanel` 和 `ResultTablePanel` 通过回调（`Runnable`、`Consumer<T>`）通信。
 
 ### 关键常量
 

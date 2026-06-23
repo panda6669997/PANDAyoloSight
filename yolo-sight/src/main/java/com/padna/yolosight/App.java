@@ -1,24 +1,35 @@
 package com.padna.yolosight;
 
-import com.formdev.flatlaf.FlatLightLaf;
-import com.padna.yolosight.gui.MainFrame;
-
-import javax.swing.*;
+import com.padna.yolosight.gui.MainWindow;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 /**
- * Application entry point.
- * Sets the FlatLaf look-and-feel and hands off to the EDT.
+ * JavaFX application entry point.
  */
-public final class App {
+public final class App extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        MainWindow mainWindow = new MainWindow(stage);
+        Scene scene = new Scene(mainWindow.getRoot(),
+                com.padna.yolosight.config.AppConfig.WINDOW_WIDTH,
+                com.padna.yolosight.config.AppConfig.WINDOW_HEIGHT);
+
+        // Dark theme CSS
+        scene.getStylesheets().add(
+                App.class.getResource("/css/dark-theme.css").toExternalForm());
+
+        stage.setTitle(com.padna.yolosight.config.AppConfig.APP_NAME);
+        stage.setScene(scene);
+        stage.setMinWidth(800);
+        stage.setMinHeight(600);
+        stage.show();
+    }
 
     public static void main(String[] args) {
-        // Install modern FlatLaf theme before any Swing component is created
-        FlatLightLaf.setup();
-
-        // All Swing work must happen on the Event Dispatch Thread
-        SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame();
-            frame.setVisible(true);
-        });
+        launch(args);
     }
 }

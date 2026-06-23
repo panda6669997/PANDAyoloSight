@@ -1,0 +1,223 @@
+/* PANDAyoloSight Dark Theme */
+
+.root {
+    -fx-base: #1e1e22;
+    -fx-background: #1e1e22;
+    -fx-control-inner-background: #2a2a2e;
+    -fx-accent: #2196F3;
+    -fx-default-button: #1976D2;
+    -fx-focus-color: #2196F3;
+    -fx-faint-focus-color: #2196F322;
+    -fx-text-fill: #e0e0e0;
+    -fx-text-base-color: #e0e0e0;
+    -fx-dark-text-color: #e0e0e0;
+    -fx-mid-text-color: #909095;
+    -fx-light-text-color: #606065;
+}
+
+/* ── Menu bar ─────────────────────────── */
+.menu-bar {
+    -fx-background-color: #252528;
+    -fx-border-color: transparent transparent #3a3a3e transparent;
+}
+
+.menu:hover, .menu:showing {
+    -fx-background-color: #3a3a3e;
+}
+
+.menu-item:hover {
+    -fx-background-color: #2196F3;
+}
+
+/* ── Toolbar ──────────────────────────── */
+.tool-bar {
+    -fx-background-color: #252528;
+    -fx-border-color: transparent transparent #3a3a3e transparent;
+    -fx-spacing: 6;
+    -fx-padding: 4 6 4 6;
+}
+
+/* ── Buttons ──────────────────────────── */
+.button {
+    -fx-background-radius: 6;
+}
+
+.toolbar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c0c0c5;
+    -fx-padding: 6 14;
+}
+
+.toolbar-button:hover {
+    -fx-background-color: #3a3a3e;
+}
+
+.accent-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+}
+
+.accent-button:hover {
+    -fx-background-color: #1E88E5;
+}
+
+.accent-button:disabled {
+    -fx-background-color: #424246;
+    -fx-text-fill: #707075;
+}
+
+/* ── Split pane ───────────────────────── */
+.split-pane {
+    -fx-background-color: #1e1e22;
+    -fx-padding: 0;
+}
+
+.split-pane-divider {
+    -fx-background-color: #3a3a3e;
+    -fx-padding: 0 1 0 1;
+}
+
+/* ── Canvas area ──────────────────────── */
+.canvas-viewport {
+    -fx-background-color: #151518;
+    -fx-border-color: #3a3a3e;
+    -fx-border-width: 1;
+}
+
+/* ── Cards in control panel ───────────── */
+.control-card {
+    -fx-background-color: #2a2a2e;
+    -fx-background-radius: 8;
+    -fx-border-color: #3a3a3e;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+}
+
+.card-title {
+    -fx-text-fill: #808085;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* ── Slider ───────────────────────────── */
+.slider .thumb {
+    -fx-background-color: #2196F3;
+}
+
+.slider .track {
+    -fx-background-color: #3a3a3e;
+}
+
+/* ── Combo box ────────────────────────── */
+.combo-box {
+    -fx-background-radius: 6;
+}
+
+/* ── Table ────────────────────────────── */
+.table-view {
+    -fx-background-color: #2a2a2e;
+    -fx-border-color: #3a3a3e;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #323236;
+    -fx-border-color: transparent transparent #3a3a3e transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #808085;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell {
+    -fx-background-color: #2a2a2e;
+    -fx-text-fill: #e0e0e0;
+    -fx-cell-size: 30;
+    -fx-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #2d2d32;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #2196F344;
+    -fx-text-fill: white;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+.table-cell {
+    -fx-text-fill: #e0e0e0;
+    -fx-alignment: center-left;
+    -fx-padding: 0 8 0 8;
+}
+
+/* ── Status bar ───────────────────────── */
+.status-bar {
+    -fx-background-color: #252528;
+    -fx-border-color: #3a3a3e transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 4 12;
+}
+
+.status-bar .label {
+    -fx-text-fill: #909095;
+    -fx-font-size: 12px;
+}
+
+/* ── Scroll pane ──────────────────────── */
+.scroll-pane {
+    -fx-background-color: #151518;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: #151518;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #505055;
+    -fx-background-radius: 4;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #606065;
+}
+
+/* ── Summary label ────────────────────── */
+.summary-count {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0e0;
+}
+
+.summary-sub {
+    -fx-font-size: 12px;
+    -fx-text-fill: #808085;
+}
+
+/* ── Image info overlay ───────────────── */
+.overlay-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #909095;
+}
