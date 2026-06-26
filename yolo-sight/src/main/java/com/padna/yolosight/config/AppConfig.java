@@ -17,19 +17,15 @@ public final class AppConfig {
     public static final String APP_VERSION = "1.0.0";
 
     // ── Model settings ──────────────────────────────────────────────────
-    /** YOLOv8 nano variant (~6 MB), best trade-off of speed vs accuracy. */
+    /** YOLOv8 nano variant (~6 MB) via DJL model zoo. */
     public static final String MODEL_NAME = "yolov8n";
-
-    /** Local directory where DJL caches downloaded model files. */
-    public static final Path MODEL_CACHE_DIR = Paths.get(
-            System.getProperty("user.home"), ".yolosight", "models");
 
     // ── Detection defaults ──────────────────────────────────────────────
     /** Minimum confidence score to keep a detection (0.0 – 1.0). */
-    public static final float DEFAULT_CONFIDENCE_THRESHOLD = 0.5f;
+    public static final float DEFAULT_CONFIDENCE_THRESHOLD = 0.10f;
 
     /** IoU threshold for Non-Maximum Suppression. */
-    public static final float DEFAULT_NMS_THRESHOLD = 0.45f;
+    public static final float DEFAULT_NMS_THRESHOLD = 0.65f;
 
     /** YOLOv8 default input resolution in pixels. */
     public static final int INPUT_SIZE = 640;

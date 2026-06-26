@@ -186,8 +186,8 @@ public class ImageCanvasView {
     private void drawDetectionsJavaFX(GraphicsContext gc,
                                        List<DetectionResult> results, double zoom) {
         double invZoom = 1.0 / Math.max(zoom, 0.05);
-        double strokeW = 2.5 * invZoom;
-        double fontSize = 14 * invZoom;
+        double strokeW = 5.0 * invZoom;
+        double fontSize = 20 * invZoom;
 
         for (DetectionResult r : results) {
             Color color = getClassColor(r.className());
@@ -222,7 +222,7 @@ public class ImageCanvasView {
         java.awt.Rectangle bbox = r.boundingBox();
         Color color = getClassColor(r.className()).brighter();
         gc.setStroke(color);
-        gc.setLineWidth(5.0 * invZoom);
+        gc.setLineWidth(8.0 * invZoom);
         gc.strokeRect(bbox.x, bbox.y, bbox.width, bbox.height);
     }
 

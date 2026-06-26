@@ -40,9 +40,9 @@ public final class DrawingUtils {
     };
 
     // Base visual constants (will be scaled by 1/zoomFactor)
-    private static final float BASE_STROKE = 2.5f;
-    private static final float BASE_HIGHLIGHT_STROKE = 5.0f;
-    private static final int BASE_FONT_SIZE = 14;
+    private static final float BASE_STROKE = 5.0f;
+    private static final float BASE_HIGHLIGHT_STROKE = 8.0f;
+    private static final int BASE_FONT_SIZE = 20;
     private static final Color LABEL_BG_COLOR = new Color(0, 0, 0, 180);
     private static final Color LABEL_TEXT_COLOR = Color.WHITE;
     private static final int LABEL_PAD_X = 6;
